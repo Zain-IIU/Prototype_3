@@ -22,13 +22,27 @@ public class CarDestruction : MonoBehaviour
     [SerializeField]
     Transform bumper;
 
+
+
+    Vector3 carHoodPos;
+    Quaternion carHoodRot;
+    Vector3 carRoofPos;
+
+    private void Start()
+    {
+        carHoodPos = carHood.localPosition;
+        carHoodRot = carHood.rotation;
+        carRoofPos = carRoof.position;
+    }
+
+
     static int hitCounter;
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.CompareTag("Wall"))
         {
             hitCounter++;
-
+         
             if (hitCounter==1)
             {
                 carHood.GetComponent<Rigidbody>().isKinematic = false;
@@ -38,7 +52,7 @@ public class CarDestruction : MonoBehaviour
             else if(hitCounter==2)
             {
                 carDoor.GetComponent<Rigidbody>().isKinematic = false;
-                carDoor.GetComponent<Rigidbody>().AddForce(Vector3.left * 10f, ForceMode.Impulse);
+                carDoor.GetComponent<Rigidbody>().AddForce(Vector3.left * 5f, ForceMode.Impulse);
 
                 carDoor.transform.parent = null;
             }
@@ -63,18 +77,15 @@ public class CarDestruction : MonoBehaviour
                 bumper.transform.parent = null;
             }
             other.gameObject.transform.DOScale(Vector3.zero, 0.25f);
-           
-            
-            
-            
-           
-            
-            
-            
-           
-            
 
-
+        }
+        if(other.gameObject.CompareTag("PickUp"))
+        {
+            carHood.GetComponent<Rigidbody>().isKinematic = true;
+            carHood.parent = this.transform;
+            carHood.DOLocalMove(carHoodPos, 1);
+            carHood.DOLocalRotateQuaternion(carHoodRot, 1);
+            other.gameObject.transform.DOScale(Vector3.zero, 0.25f);
         }
     }
 }
